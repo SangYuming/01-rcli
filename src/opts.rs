@@ -9,18 +9,26 @@ pub struct Opts {
     pub cmd: SubCommand,
 }
 
+/// 子命令
 #[derive(Debug, Parser)]
 pub enum SubCommand {
+    /// csv 命令
     #[command(name = "csv", about = "Show CSV, or Convert CSV to other formats")]
     Csv(CsvOpts),
+
+    /// 生成密码命令参数
+    #[command(name = "genpass", about = "Generate a random password")]
+    GenPass(GenPassOpts),
 }
 
+/// 解析csv输出格式
 #[derive(Debug, Clone, Copy)]
 pub enum OutputFormat {
     Json,
     Yaml,
 }
 
+/// csv 命令参数
 #[derive(Debug, Parser)]
 pub struct CsvOpts {
     #[arg(short, long, value_parser = verify_input_file, help = "Input file path")]
@@ -39,6 +47,26 @@ pub struct CsvOpts {
     pub delimiter: char,
 }
 
+/// 生成密码命令参数
+#[derive(Debug, Parser)]
+pub struct GenPassOpts {
+    #[arg(short, long, default_value_t = 16)]
+    pub length: u8,
+
+    #[arg(long, default_value_t = true)]
+    pub uppercase: bool,
+
+    #[arg(long, default_value_t = true)]
+    pub lowercase: bool,
+
+    #[arg(long, default_value_t = true)]
+    pub number: bool,
+
+    #[arg(long, default_value_t = true)]
+    pub symbol: bool,
+}
+
+/// 验证输入文件是否存在
 fn verify_input_file(filename: &str) -> Result<String, &'static str> {
     if filename.is_empty() {
         return Err("Input file path can not be empty");
