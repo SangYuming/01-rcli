@@ -1,25 +1,7 @@
 use clap::Parser;
-use std::{fmt, path::Path, str::FromStr};
+use std::{fmt, str::FromStr};
 
-/// 命令行参数
-#[derive(Debug, Parser)]
-#[command(name = "rcli", version, author, about,long_about = None)]
-pub struct Opts {
-    #[command(subcommand)]
-    pub cmd: SubCommand,
-}
-
-/// 子命令
-#[derive(Debug, Parser)]
-pub enum SubCommand {
-    /// csv 命令
-    #[command(name = "csv", about = "Show CSV, or Convert CSV to other formats")]
-    Csv(CsvOpts),
-
-    /// 生成密码命令参数
-    #[command(name = "genpass", about = "Generate a random password")]
-    GenPass(GenPassOpts),
-}
+use super::verify_input_file;
 
 /// 解析csv输出格式
 #[derive(Debug, Clone, Copy)]
@@ -45,36 +27,6 @@ pub struct CsvOpts {
 
     #[arg(short, long, help = "Delimiter", default_value_t = ',')]
     pub delimiter: char,
-}
-
-/// 生成密码命令参数
-#[derive(Debug, Parser)]
-pub struct GenPassOpts {
-    #[arg(short, long, default_value_t = 16)]
-    pub length: u8,
-
-    #[arg(long, default_value_t = true)]
-    pub uppercase: bool,
-
-    #[arg(long, default_value_t = true)]
-    pub lowercase: bool,
-
-    #[arg(long, default_value_t = true)]
-    pub number: bool,
-
-    #[arg(long, default_value_t = true)]
-    pub symbol: bool,
-}
-
-/// 验证输入文件是否存在
-fn verify_input_file(filename: &str) -> Result<String, &'static str> {
-    if filename.is_empty() {
-        return Err("Input file path can not be empty");
-    }
-    if !Path::new(filename).exists() {
-        return Err("Input file does not exist");
-    }
-    Ok(filename.to_string())
 }
 
 /// 解析输出格式
